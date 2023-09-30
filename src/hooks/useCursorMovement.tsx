@@ -1,18 +1,26 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 const useCursorMovement = () => {
     const [isCursorIdle, setIsCursorIdle] = useState(false)
 
     const IDLE_INTERVAL = 500
 
-    let idleTimeout: number;
-    document.addEventListener('mousemove', () => {
-        setIsCursorIdle(false)
-        clearTimeout(idleTimeout)
-        setTimeout(() => setIsCursorIdle(true), IDLE_INTERVAL)
+    useEffect(() => {
+        let idleTimeout: number;
+        const updateIsCursorIdle = () => {
+            setIsCursorIdle(false)
+            clearTimeout(idleTimeout)
+            idleTimeout = setTimeout(() => setIsCursorIdle(true), IDLE_INTERVAL)
+        }
+        document.addEventListener('mousemove', updateIsCursorIdle)
+
+        return () => {
+            document.removeEventListener('mousemove', updateIsCursorIdle)
+            clearTimeout(idleTimeout)
+        }
     })
 
-    return isCursorIdle
+    return [isCursorIdle]
 }
 
 export default useCursorMovement
