@@ -3,7 +3,7 @@ import { useEffect, useState } from "react"
 const useCursorMovement = () => {
     const [isCursorIdle, setIsCursorIdle] = useState(false)
 
-    const IDLE_INTERVAL = 500
+    const IDLE_INTERVAL = 1000
 
     useEffect(() => {
         let idleTimeout: number;
