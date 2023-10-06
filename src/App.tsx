@@ -5,6 +5,11 @@ import { useEffect, useState } from 'react'
 import useCursorMovement from './hooks/useCursorMovement'
 import { range } from './utils/misc'
 import { RgbaColor, RgbaColorPicker } from 'react-colorful'
+import { Color } from './types/types'
+import Tiles from './components/Tiles/Tiles'
+import Toolbar from './components/Toolbar/Toolbar'
+import { calculateTileColors } from './utils/colors'
+import EditingOverlay from './components/EditingOverlay/EditingOverlay'
  
 function App() {
 
@@ -18,39 +23,14 @@ function App() {
   const tileHeight = screenHeight / totalRows
   const tileWidth = screenWidth / totalCols
 
-  type Color = [number, number, number, number]
-  const gradients: Color[][] = []
+  
   const [colors, setColors] = useState<Color[]>([
     [232, 150, 120, 1],
     [20, 100, 180, 1],
     [219, 239, 106, 1],
     [0, 205, 210, 1]
   ])
-
-  const convertColorToRgba = (color: Color) => ({
-    'r': color[0],
-    'g': color[1],
-    'b': color[2],
-    'a': color[3]
-  } as RgbaColor)
-
-  const findIncrements = (firstColor: Color, secondColor: Color, numTiles: number) => {
-    return range(4).map(index => (secondColor[index] - firstColor[index]) / (numTiles - 1))
-  }
-
-  const leftIncrements = findIncrements(colors[0], colors[2], totalRows)
-  const rightIncrements = findIncrements(colors[1], colors[3], totalRows)
-  
-  range(totalRows).forEach(rowNum => {
-    const firstColor = leftIncrements.map((increment, index) => colors[0][index] + increment * rowNum) as Color
-    const lastColor = rightIncrements.map((increment, index) => colors[1][index] + increment * rowNum) as Color
-
-    const colIncrements = findIncrements(firstColor, lastColor, totalCols)
-
-    gradients.push(range(totalCols).map(colNum => {
-      return colIncrements.map((increment, index) => firstColor[index] + increment * colNum) as Color
-    }))
-  })
+  const tileColors = calculateTileColors(colors, totalRows, totalCols)
 
   useEffect(() => {
     document.documentElement.style.cursor = isCursorIdle && !isEditing ? 'none' : 'auto'
@@ -61,57 +41,20 @@ function App() {
 
 
   return (<main>
-    { gradients.map(row => (
-      <div className="flex">
-        { row.map(color => (
-          <div style={{
-            width: tileWidth,
-            height: tileHeight,
-            backgroundColor: `rgba(${color.join(', ')})`
-          }}></div>
-        )) }
-      </div>
-    ))}
-    <div
-        className="absolute bottom-4 right-4 rounded-full bg-white flex items-center px-4 py-2 gap-2 transition-opacity shadow"
-        style={{
-          opacity: isCursorIdle ? '0' : ''
-        }}
-        >
-        {isEditing
-        ? <IconColorPickerOff
-            size={24}
-            className='opacity-70 hover:opacity-90 transition-opacity'
-            onClick={() => setIsEditing(false)}
-          />
-        : <IconColorPicker
-            size={24}
-            className='opacity-70 hover:opacity-90 transition-opacity'
-            onClick={() => setIsEditing(true)}
-          />
-        }
-        <IconDice5
-          size={24}
-          className='opacity-70 hover:opacity-90 transition-opacity'
-        />
-        <a href="https://github.com/lifeng-yin/tile-gradient" target='_blank' rel='noopener noreferrer'>
-          <IconBrandGithub
-            size={24}
-            className='opacity-70 hover:opacity-90 transition-opacity'
-          />
-        </a> 
-    </div>
-    <RgbaColorPicker
-      className='absolute bottom-56'
-      color={convertColorToRgba(colors[0])}
-      onChange={(color: RgbaColor) => {
-        console.log(color)
-        setColors([Object.values(color) as Color, ...colors.slice(1)])
-      }}
-      style={{
-        display: isEditing ? 'block' : 'none'
-      }}
+    <Tiles
+      gradients={tileColors}
+      tileWidth={tileWidth}
+      tileHeight={tileHeight}
     />
+    <Toolbar
+      isCursorIdle={isCursorIdle}
+      isEditing={isEditing}
+      setIsEditing={setIsEditing}
+    />
+    {isEditing && <EditingOverlay
+      colors={colors}
+      setColors={setColors}
+    />}
     
   </main>)
 }
