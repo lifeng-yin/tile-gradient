@@ -1,14 +1,18 @@
 import { IconColorPicker, IconColorPickerOff, IconDice5, IconBrandGithub } from "@tabler/icons-react"
 import { Dispatch, SetStateAction } from "react"
+import { Color } from "../../types/types"
+import { generateRandomColors } from "../../utils/colors"
 
 const Toolbar = ({
     isCursorIdle,
     isEditing,
-    setIsEditing
+    setIsEditing,
+    setColors
 }: {
     isCursorIdle: boolean,
     isEditing: boolean,
-    setIsEditing: Dispatch<SetStateAction<boolean>>
+    setIsEditing: Dispatch<SetStateAction<boolean>>,
+    setColors: Dispatch<SetStateAction<Color[]>>
 }) => {
   return (
     <div
@@ -32,6 +36,7 @@ const Toolbar = ({
         <IconDice5
           size={24}
           className='opacity-70 hover:opacity-90 transition-opacity'
+          onClick={() => setColors(generateRandomColors())}
         />
         <a href="https://github.com/lifeng-yin/tile-gradient" target='_blank' rel='noopener noreferrer'>
           <IconBrandGithub

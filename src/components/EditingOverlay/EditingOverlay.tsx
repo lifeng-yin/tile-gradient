@@ -1,3 +1,4 @@
+import { ReactNode } from "react"
 import { RgbaColorPicker, RgbaColor } from "react-colorful"
 import { convertColorToRgba } from "../../utils/colors"
 import { Color } from "../../types/types"
@@ -19,9 +20,9 @@ const ColorPicker = (
     />
 
 const EditingOverlay = (
-    { colors, setColors }:
-    { colors: Color[], setColors: Dispatch<SetStateAction<Color[]>>
-}) => {
+    { colors, setColors, children }:
+    { colors: Color[], setColors: Dispatch<SetStateAction<Color[]>>, children: ReactNode }
+) => {
   return (
     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-wrap justify-center items-center gap-7 w-[32rem] py-8 bg-white/30 rounded-lg shadow backdrop-blur-[2px]">
         { range(4).map(index => <ColorPicker
@@ -29,7 +30,7 @@ const EditingOverlay = (
             setColors={setColors}
             index={index}
         />)}
-        
+        { children }
     </div>
   )
 }

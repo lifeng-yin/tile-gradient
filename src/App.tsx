@@ -1,14 +1,12 @@
 import { useWindowSize } from '@react-hook/window-size/throttled'
-import { IconBrandGithub, IconColorPicker, IconColorPickerOff, IconDice5, IconX } from '@tabler/icons-react'
 import './App.css'
 import { useEffect, useState } from 'react'
+import { IconX } from '@tabler/icons-react'
 import useCursorMovement from './hooks/useCursorMovement'
-import { range } from './utils/misc'
-import { RgbaColor, RgbaColorPicker } from 'react-colorful'
 import { Color } from './types/types'
 import Tiles from './components/Tiles/Tiles'
 import Toolbar from './components/Toolbar/Toolbar'
-import { calculateTileColors } from './utils/colors'
+import { calculateTileColors, generateRandomColors } from './utils/colors'
 import EditingOverlay from './components/EditingOverlay/EditingOverlay'
  
 function App() {
@@ -17,7 +15,7 @@ function App() {
   const [isCursorIdle] = useCursorMovement()
   const [isEditing, setIsEditing] = useState(false)
 
-  const tileSize = 120
+  const tileSize = 30
   const totalRows = Math.round(screenHeight / tileSize)
   const totalCols = Math.round(screenWidth / tileSize)
   const tileHeight = screenHeight / totalRows
@@ -39,6 +37,16 @@ function App() {
     }
   }, [isCursorIdle])
 
+  useEffect(() => {
+    const keyPressListener = (event: KeyboardEvent) => {
+      if (event.code === 'Space') {
+        setColors(generateRandomColors())
+      }
+    }
+    document.addEventListener('keypress', keyPressListener)
+    return () => { document.removeEventListener('keypress', keyPressListener)}
+  })
+
 
   return (<main>
     <Tiles
@@ -50,11 +58,20 @@ function App() {
       isCursorIdle={isCursorIdle}
       isEditing={isEditing}
       setIsEditing={setIsEditing}
-    />
-    {isEditing && <EditingOverlay
-      colors={colors}
       setColors={setColors}
-    />}
+    />
+    {isEditing && 
+      <EditingOverlay
+        colors={colors}
+        setColors={setColors}
+      >
+        <IconX
+          size={20}
+          className="absolute top-2 right-2 stroke-gray-700 hover:stroke-gray-900"
+          onClick={() => setIsEditing(false)}
+        />
+      </EditingOverlay>
+    }
     
   </main>)
 }

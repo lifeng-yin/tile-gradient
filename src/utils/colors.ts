@@ -28,3 +28,10 @@ export const convertColorToRgba = (color: Color): RgbaColor => ({
     'b': color[2],
     'a': color[3]
 })
+
+export const generateRandomColors = (): Color[] => {
+    return range(4).map(_ => range(4).map(j => {
+        if (j === 3) return 1
+        else return Math.floor(Math.random() * 255)
+    }) as Color)
+}
