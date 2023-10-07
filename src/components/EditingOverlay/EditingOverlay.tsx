@@ -8,7 +8,7 @@ const ColorPicker = (
     { colors, setColors, index }:
     { colors: Color[], setColors: Dispatch<SetStateAction<Color[]>>, index: number }
 ) => <RgbaColorPicker
-        className=''
+        className="shadow rounded-[10px]"
         color={convertColorToRgba(colors[index])}
         onChange={(newColor: RgbaColor) => {
             setColors(colors.map((color, i) => {
@@ -23,7 +23,7 @@ const EditingOverlay = (
     { colors: Color[], setColors: Dispatch<SetStateAction<Color[]>>
 }) => {
   return (
-    <div className="flex absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 gap-8 w-[32rem] flex-wrap items-center justify-center">
+    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-wrap justify-center items-center gap-7 w-[32rem] py-8 bg-white/30 rounded-lg shadow backdrop-blur-[2px]">
         { range(4).map(index => <ColorPicker
             colors={colors}
             setColors={setColors}
